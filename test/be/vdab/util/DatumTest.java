@@ -4,16 +4,20 @@
  */
 package be.vdab.util;
 
-import java.lang.reflect.Method;
-import be.vdab.voertuigen.div.Nummerplaat;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import org.junit.*;
-import static org.junit.Assert.*;
+import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Test;
+
 
 /**
  *
