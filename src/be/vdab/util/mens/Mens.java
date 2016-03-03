@@ -5,28 +5,40 @@
  */
 package be.vdab.util.mens;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
  * @author marc.wouters
  */
 public class Mens implements Comparable<Mens> {
+
     private String naam;
-    private List<Rijbewijs> rijbewijzen = new ArrayList<>();
+    private Set<Rijbewijs> rijbewijzen = new TreeSet<>();
+    //private Rijbewijs[] rijbewijzen;
 
     public Mens(String naam) {
         this.naam = naam;
+    }    
+    public Mens (String naam, Rijbewijs... rijbewijzen) {
+        this.naam = naam;      
+        for(Rijbewijs rb : rijbewijzen) {
+            this.rijbewijzen.add(rb);
+        }
     }
     
-    public Mens (String naam, Rijbewijs... rijbewijs){
-        this.naam = naam;
-        this.rijbewijzen.add(rijbewijs[0]);
-       
+    public String getNaam() {
+        return naam;
     }
 
+    public Rijbewijs[] getRijbewijs() {
+        Rijbewijs[] rijbewijsArray = new Rijbewijs[rijbewijzen.size()];
+        return rijbewijsArray = rijbewijzen.toArray(rijbewijsArray);
+    }
+        
     // automatisch gegenereerde equals()
     @Override
     public int hashCode() {
@@ -62,17 +74,26 @@ public class Mens implements Comparable<Mens> {
     public int compareTo(Mens o) {
           // compare 2 namen
         int vgl = this.naam.compareTo(o.naam);
-//        if (vgl == 0) {
-//            for (Rijbewijs bewijs : rijbewijzen) {
-//        while (vgl == 0) {
-  //          rijbewijs
-                
-    //        }
-      //  }
-      return vgl;
+        if (vgl == 0) {
+            for ( Iterator<Rijbewijs> rb = rijbewijzen.iterator(); vgl == 0 && rb.hasNext() ; ) { 
+                vgl = rb.next().compareTo(o.rijbewijzen.iterator().next());
+            }
+        }
+        return vgl;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        String toS = naam;
+        if (rijbewijzen.size() > 0) {
+            toS += "(";
+            for (Rijbewijs rb : this.rijbewijzen) {
+                toS += rb.toString() + ", ";
+            }
+            toS = toS.substring(0, toS.length()-2) + ")";
+        }    
+        return toS;
+    }
     
     
 }
