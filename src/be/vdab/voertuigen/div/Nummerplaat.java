@@ -19,5 +19,10 @@ public class Nummerplaat {
     public String getPlaat() {
         return plaat;
     }
+
+    @Override
+    public String toString() {
+        return plaat;
+    }
     
 }
