@@ -5,6 +5,7 @@
  */
 package be.vdab.util.mens;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
@@ -14,11 +15,10 @@ import java.util.TreeSet;
  *
  * @author marc.wouters
  */
-public class Mens implements Comparable<Mens> {
+public class Mens implements Comparable<Mens>, Serializable {
 
     private String naam;
     private Set<Rijbewijs> rijbewijzen = new TreeSet<>();
-    //private Rijbewijs[] rijbewijzen;
 
     public Mens(String naam) {
         this.naam = naam;

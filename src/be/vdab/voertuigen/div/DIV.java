@@ -16,7 +16,7 @@ public enum DIV {
     // package visibility : enig nummer
     static int nummer = 0;
             
-    Nummerplaat getNummerplaat() {
+    public Nummerplaat getNummerplaat() {
         // nummer gaat omhoog bij iedere aanvraag
         // van 999 naar 001
         nummer = (nummer == 999) ? 1 : ++nummer;
