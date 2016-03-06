@@ -34,19 +34,14 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
         setDatumEersteIngebruikname (datum);
         setAankoopprijs (prijs);
         setZitplaatsen (plaatsen);
-        try {
-            if (checkRijbewijs (chauffeur)) {
-                this.bestuurder = chauffeur;
-            }
-            for (Mens pas : passagiers) {
-                if (checkAantalIngezetenen (pas)) {
-                    ingezetenen.add (pas);
-                } 
-            }
-        } catch (MensException ex) {
-            System.err.println(ex.getMessage());
+        if (checkRijbewijs (chauffeur)) {
+            this.bestuurder = chauffeur;
         }
-
+        for (Mens pas : passagiers) {
+            if (checkAantalIngezetenen (pas)) {
+                ingezetenen.add (pas);
+            } 
+        }
     }
  
     abstract Rijbewijs[] getToegestaneRijbewijzen();
@@ -102,30 +97,24 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
     }
 
     // Setter (voor bestuurder) en adder (voor passagier)
-    // Beide moeten de MensException catchen, want niet gedeclareerd in de @Test
-    public void setBestuurder(Mens chauffeur) {       
-        try {
-            if (checkRijbewijs(chauffeur) && checkAantalIngezetenen (chauffeur)) {
-                ingezetenen.add (this.bestuurder);
-                this.bestuurder = chauffeur;
-            }            
-        } catch (MensException ex) {
-            System.err.println(ex.getMessage());
-        }
+    // Geen try en catch, want RuntimeException = unchecked
+    public void setBestuurder(Mens chauffeur) {           
+    
+        if (!bestuurder.equals(chauffeur) && checkRijbewijs(chauffeur) && checkAantalIngezetenen (chauffeur)) {
+            ingezetenen.add (this.bestuurder);
+            this.bestuurder = chauffeur;
+        }            
     }       
     public void addIngezetene(Mens passagier) {
-        try {
-            if (checkAantalIngezetenen (passagier)) {
+            if (!bestuurder.equals(passagier) && checkAantalIngezetenen (passagier)) {
                 ingezetenen.add (passagier);
             }
-        } catch (MensException ex) {
-            System.err.println(ex.getMessage());
-        }
     }
     
     // chauffeur moet een rijbewijs hebben, 
     // en het moet geldig zijn voor het huidige voertuig
-    private boolean checkRijbewijs (Mens chauffeur) throws MensException {
+//    private boolean checkRijbewijs (Mens chauffeur) throws MensException {
+    private boolean checkRijbewijs (Mens chauffeur) {
         
         if (chauffeur.getRijbewijs().length == 0) {
             throw new MensException (chauffeur.toString() + " : geen rijbewijs");
@@ -147,14 +136,26 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
         }
     }
     
-    private boolean checkAantalIngezetenen (Mens nieuwePassagier) throws MensException {
+//    private boolean checkAantalIngezetenen (Mens nieuwePassagier) throws MensException {
+    private boolean checkAantalIngezetenen (Mens nieuwePassagier) {
         
         Set<Mens> huidigePassagiers = getIngezetenen();
-        if ( huidigePassagiers.size() == zitplaatsen && !huidigePassagiers.contains(nieuwePassagier) ) {                         
-            throw new MensException (nieuwePassagier.toString () + " kan er niet meer bij");
-        } else {
+        if (huidigePassagiers.size() < zitplaatsen) {
             return true;
         }
+/*  TODO:   deze code blijkt niet te werken, geen idee waarom
+        if (ingezetenen.contains(nieuwePassagier) ) {  
+            return true;
+        }
+*/
+        for (Mens mens : huidigePassagiers) {
+            if (mens.equals(nieuwePassagier)) {
+                return true;
+            }
+        }
+        // als de code hier geraakt, is het niet goed
+        throw new MensException (nieuwePassagier.toString () + " kan er niet meer bij");
+        
     }    
   
 // TODO  : de tests voor deze methods testen alleen op assertTrue;
@@ -166,13 +167,12 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
     }
  
     // automatische gegenereerde method
-    @Override
+ /*   @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 89 * hash + Objects.hashCode(this.nummerplaat);
+        int hash = Objects.hashCode(this.nummerplaat);
         return hash;
     }
-
+*/
     // automatische gegenereerde method
     @Override
     public boolean equals(Object obj) {

@@ -20,6 +20,6 @@ public enum DIV {
         // nummer gaat omhoog bij iedere aanvraag
         // van 999 naar 001
         nummer = (nummer == 999) ? 1 : ++nummer;
-        return new Nummerplaat(String.format("AAA%3d", nummer));
+        return new Nummerplaat(String.format("AAA%03d", nummer));
     }
 }
