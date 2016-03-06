@@ -18,7 +18,7 @@ import java.util.TreeSet;
  *
  * @author marc.wouters
  */
-public abstract class Voertuig implements Serializable, Comparable<Voertuig> {
+public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
     private final Nummerplaat nummerplaat = DIV.INSTANCE.getNummerplaat();
     private String merk;
     private Datum datumEersteIngebruikname;
@@ -27,23 +27,30 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig> {
     private Mens bestuurder;
     private Set<Mens> ingezetenen = new TreeSet<>();
 
-//    public Voertuig(String merk, Datum datum, int prijs, int zitplaatsen, Mens bestuurder, Mens... inzittenden) throws MensException {
-    public Voertuig(String merk, Datum datum, int prijs, int plaatsen, Mens bestuurder, Mens... inzittenden) {
+    // Constructor moet de error MensException catchen,
+    // want niet gedeclareerd in de @Test
+    public Voertuig(String merk, Datum datum, int prijs, int plaatsen, Mens chauffeur, Mens... passagiers) {
         setMerk (merk);
         setDatumEersteIngebruikname (datum);
         setAankoopprijs (prijs);
         setZitplaatsen (plaatsen);
-        this.bestuurder = bestuurder;      
-        if (inzittenden.length <= zitplaatsen) {
-            for(Mens mens : inzittenden) {
-                this.ingezetenen.add(mens);
+        try {
+            if (checkRijbewijs (chauffeur)) {
+                this.bestuurder = chauffeur;
             }
+            for (Mens pas : passagiers) {
+                if (checkAantalIngezetenen (pas)) {
+                    ingezetenen.add (pas);
+                } 
+            }
+        } catch (MensException ex) {
+            System.err.println(ex.getMessage());
         }
-/*        else {
-            throw new MensException ("Teveel inzittenden voor deze auto");                        
-        }
- */      
+
     }
+ 
+    abstract Rijbewijs[] getToegestaneRijbewijzen();
+    abstract int getMAX_ZITPLAATSEN();
 
     public Nummerplaat getNummerplaat () {
         return nummerplaat;
@@ -69,61 +76,94 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig> {
     public void setAankoopprijs(int prijs) {
         this.aankoopprijs = prijs;
     }
-    
-//    private final void setZitplaatsen(int plaatsen) throws Exception {
+
+    public int getZitplaatsen() {
+        return zitplaatsen;
+    }       
     private final void setZitplaatsen(int plaatsen) {
-        if (plaatsen > 0) {
+        if (plaatsen > 0 && plaatsen <= getMAX_ZITPLAATSEN()) {
             this.zitplaatsen = plaatsen;
-        }
-        else {
-            // MOET IK HIER EEN exception throwen
-//            throw new IllegalArgumentException();
+        } else {           
+            throw new IllegalArgumentException();
         }
     }
     
+    // Getters voor de inzittenden : bestuurder, passagiers, of iedereen samen
     public Mens getBestuurder() {
         return bestuurder;
     }
-    
-//    public void setBestuurder(Mens bestuurder) throws MensException {
-    public void setBestuurder(Mens bestuurder) {
-        if ((ingezetenen.size() < zitplaatsen) || ingezetenen.contains(bestuurder)) {
-            ingezetenen.add (this.bestuurder);
-            this.bestuurder = bestuurder;
-        }
-        else {
-            // geen plaats meer voor nieuwe bestuurder
-            // throw new MensException ("Geen plaats meer voor de nieuwe bestuurder");
-        }
+    public Set<Mens> getIngezeteneExclusiefBestuurder() {
+        return ingezetenen;
     }
-    
-//    public void addIngezetene(Mens ingezetene) throws MensException {
-    public void addIngezetene(Mens ingezetene) {
-        if ((ingezetenen.size() < zitplaatsen) || ingezetenen.contains(ingezetene)) {
-            ingezetenen.add (ingezetene);
-        }
-        else {
-            // geen plaats meer voor nieuwe bestuurder
-            // throw new MensException ("Geen plaats meer voor de nieuwe bestuurder");
-        }
-    }
-    
     public Set<Mens> getIngezetenen() {
         Set<Mens> bestuurderPlusIngezetenen = new TreeSet<>(ingezetenen);
         bestuurderPlusIngezetenen.add(bestuurder);
         return bestuurderPlusIngezetenen;
     }
 
-    public Set<Mens> getIngezeteneExclusiefBestuurder() {
-        return ingezetenen;
+    // Setter (voor bestuurder) en adder (voor passagier)
+    // Beide moeten de MensException catchen, want niet gedeclareerd in de @Test
+    public void setBestuurder(Mens chauffeur) {       
+        try {
+            if (checkRijbewijs(chauffeur) && checkAantalIngezetenen (chauffeur)) {
+                ingezetenen.add (this.bestuurder);
+                this.bestuurder = chauffeur;
+            }            
+        } catch (MensException ex) {
+            System.err.println(ex.getMessage());
+        }
+    }       
+    public void addIngezetene(Mens passagier) {
+        try {
+            if (checkAantalIngezetenen (passagier)) {
+                ingezetenen.add (passagier);
+            }
+        } catch (MensException ex) {
+            System.err.println(ex.getMessage());
+        }
     }
-
-    public boolean isIngezetene (Mens m) {
-        return true;
+    
+    // chauffeur moet een rijbewijs hebben, 
+    // en het moet geldig zijn voor het huidige voertuig
+    private boolean checkRijbewijs (Mens chauffeur) throws MensException {
+        
+        if (chauffeur.getRijbewijs().length == 0) {
+            throw new MensException (chauffeur.toString() + " : geen rijbewijs");
+        } else {
+            // TODO : hier moet waarschijnlijk een 'matchesAny' of zoiets komen om de code compacter te maken
+            boolean geldig = false;
+            for (Rijbewijs geldigRB : getToegestaneRijbewijzen()) {
+                for (Rijbewijs chauffeurRB : chauffeur.getRijbewijs()) {
+                    if(geldigRB.equals(chauffeurRB)) {
+                        geldig = true;
+                    }
+                }
+            }
+            if (geldig) {
+                return true;
+            } else {
+                throw new MensException (chauffeur.toString () + " : ongeldig rijbewijs");
+            }  
+        }
     }
-    abstract Rijbewijs[] getToegestaneRijbewijzen();
-    abstract int getMAX_ZITPLAATSEN();
-
+    
+    private boolean checkAantalIngezetenen (Mens nieuwePassagier) throws MensException {
+        
+        Set<Mens> huidigePassagiers = getIngezetenen();
+        if ( huidigePassagiers.size() == zitplaatsen && !huidigePassagiers.contains(nieuwePassagier) ) {                         
+            throw new MensException (nieuwePassagier.toString () + " kan er niet meer bij");
+        } else {
+            return true;
+        }
+    }    
+  
+// TODO  : de tests voor deze methods testen alleen op assertTrue;
+// als ik steeds "return true;" stuur pass ik elke test, zonder echt te checken
+    public boolean isIngezetene (Mens mens) {
+        // TODO : waarom werkt die eerste lijn niet ???
+        // return getIngezetenen().contains (mens);
+        return  (bestuurder.equals(mens) || ingezetenen.contains(mens));
+    }
  
     // automatische gegenereerde method
     @Override

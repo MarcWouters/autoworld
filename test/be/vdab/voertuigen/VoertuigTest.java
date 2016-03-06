@@ -53,6 +53,7 @@ public class VoertuigTest implements Serializable, MensFactorInTest {
     }
 
     
+    
     @Test
     public void test_not_null() {
         assertNotNull(new TestVoertuig("a", datum, 100, AANTAL_INZITTENDEN, BESTUURDER_BBECCE));
@@ -472,6 +473,9 @@ public class VoertuigTest implements Serializable, MensFactorInTest {
     public void test_isIngezetene_na_setBestuurder_nieuwe_bestuurder() {
         Voertuig voertuig = new TestVoertuig("auto", datum, 18300, AANTAL_INZITTENDEN, BESTUURDER_B, INGEZETENE_A);
         voertuig.setBestuurder(BESTUURDER_BBE);
+        System.out.println(voertuig.getBestuurder().toString());
+        System.out.println(voertuig.getIngezeteneExclusiefBestuurder().toString());
+        System.out.println(voertuig.getIngezetenen().toString());
         assertTrue(voertuig.isIngezetene(BESTUURDER_BBE));
         assertTrue(voertuig.isIngezetene(BESTUURDER_B));
     }
@@ -480,6 +484,9 @@ public class VoertuigTest implements Serializable, MensFactorInTest {
     public void test_isIngezetene_na_setBestuurder_bestaande_inzittende() {
         Voertuig voertuig = new TestVoertuig("auto", datum, 18300, AANTAL_INZITTENDEN, BESTUURDER_B, BESTUURDER_BBE);
         voertuig.setBestuurder(BESTUURDER_BBE);
+        System.out.println(voertuig.getBestuurder().toString());
+        System.out.println(voertuig.getIngezeteneExclusiefBestuurder().toString());
+        System.out.println(voertuig.getIngezetenen().toString());
         assertTrue(voertuig.isIngezetene(BESTUURDER_BBE));
         assertTrue(voertuig.isIngezetene(BESTUURDER_B));
     }
@@ -549,4 +556,5 @@ public class VoertuigTest implements Serializable, MensFactorInTest {
             assertArrayEquals(expected, actual);
         }
     }
+
 }

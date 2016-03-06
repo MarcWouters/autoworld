@@ -10,6 +10,7 @@ package be.vdab.util.mens;
  * @author marc.wouters
  */
 public class MensException extends Exception {
+//public class MensException extends RuntimeException {
 
     public MensException() {
     }

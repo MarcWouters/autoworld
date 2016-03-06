@@ -21,7 +21,7 @@ public class Datum implements Serializable, Comparable<Datum> {
             this.maand = maand;
             this.jaar = jaar;
         } else {
-            throw new DatumException ("Ongeldige data");
+            throw new DatumException ("Ongeldige datum");
         }
     }
 
