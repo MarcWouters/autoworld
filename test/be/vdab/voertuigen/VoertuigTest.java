@@ -376,9 +376,6 @@ public class VoertuigTest implements Serializable, MensFactorInTest {
     @Test
     public void test_setBestuurder_wissel_Bestuurder_met_ingezetenen() {
         Voertuig voertuig = new TestVoertuig("auto", datum, 18300, AANTAL_INZITTENDEN, BESTUURDER_B, BESTUURDER_BBE, INGEZETENE_C);
-        for (Mens mens : voertuig.getIngezetenen()) {
-            System.out.println(mens.toString() + "\t" + mens.equals(BESTUURDER_BBE));
-        }
         voertuig.setBestuurder(BESTUURDER_BBE);
     }
 

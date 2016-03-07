@@ -27,8 +27,6 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
     private Mens bestuurder;
     private Set<Mens> ingezetenen = new TreeSet<>();
 
-    // Constructor moet de error MensException catchen,
-    // want niet gedeclareerd in de @Test
     public Voertuig(String merk, Datum datum, int prijs, int plaatsen, Mens chauffeur, Mens... passagiers) {
         setMerk (merk);
         setDatumEersteIngebruikname (datum);
