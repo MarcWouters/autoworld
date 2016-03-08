@@ -84,7 +84,9 @@ public class HoofdProgramma {
                 //voertuig = (Voertuig) ois.readObject();
                 voertuigen4.add((Voertuig) ois.readObject());
             }
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
             System.err.println("einde van de file");
         }
         System.out.println();
