@@ -160,17 +160,15 @@ public abstract class Voertuig implements Serializable, Comparable<Voertuig>  {
 // als ik steeds "return true;" stuur pass ik elke test, zonder echt te checken
     public boolean isIngezetene (Mens mens) {
         // TODO : waarom werkt die eerste lijn niet ???
-        // return getIngezetenen().contains (mens);
-        return  (bestuurder.equals(mens) || ingezetenen.contains(mens));
+        return getIngezetenen().contains (mens);
+        //return  (bestuurder.equals(mens) || ingezetenen.contains(mens));
     }
  
-    // automatische gegenereerde method
- /*   @Override
+    @Override
     public int hashCode() {
-        int hash = Objects.hashCode(this.nummerplaat);
-        return hash;
+        return this.nummerplaat.hashCode();        
     }
-*/
+
     // automatische gegenereerde method
     @Override
     public boolean equals(Object obj) {
